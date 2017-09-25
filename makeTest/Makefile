@@ -18,18 +18,37 @@ CC := gcc
 
 RM := rm -rf
 
+CPPDIRS=.
+CPPS=$(shell for dir in ${CPPDIRS};do echo $${dir}/*.cpp;done)
+
+OBJDIR=obj
+OBJS=$(patsubst %.cpp,${OBJDIR}/%.o,$(notdir ${CPPS}))
+
+
+SUBDIRS = foo bar baz
+
+
+
 #final target rule
 $(executable): $(objects)
-		$(CC) -o $@ $^
+		$(CC) $^ -o $@ 
 
 #static model simply makefile
 $(objects):%.o:%.cpp
-		$(CC) -o $@ -c $<
+		$(CC) -c $< -o $@ 
 
 #clean rule for complicated project
-.PHONY: clean
+.PHONY: clean echo subdir
 clean:
 		$(RM) $(executable) $(objects) $(deps)
+
+echo:
+		$(OBJS)
+
+subdir:
+	 for dir in $(SUBDIRS);do\
+          $(shell mkdir $$dir);\
+        done
 
 sinclude $(deps)
 $(deps):%.d:%.cpp

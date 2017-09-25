@@ -42,10 +42,29 @@ namespace mysqlhelper{
 	void MysqlHelper::init(const string& sHost, const string& sUser, const string& sPassword, const string& sDatabase,const string& scharSet, int port, int iFlag)
 	{
 		_dbConf._host = sHost;
-		
-
-
-
+        _dbConf._user = sUser;
+        _dbConf._passsword = sPassword;
+        _dbConf._database = sDatabase;
+        _dbConf._characters = scharSet;
+        _dbConf._port = port;
+        _dbConf._port = iFlag;
+        
 	}
+    
+    void MysqlHelper::init(const DBConf& tcDBConf)
+    {
+        _dbConf = tcDBConf;
+    }
+    
+    void MysqlHelper::connect()
+    {
+        disConnect();
+        if (_pstMql == NULL) {
+            
+            _pstMql = mysql_init(NULL);
+            
+        }
+        
+    }
 
 }

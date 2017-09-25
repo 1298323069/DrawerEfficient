@@ -164,7 +164,7 @@ namespace mysqlhelper
 
 	private:
 
-		MYSQL * _pstMql;
+		MYSQL * _pstMql; 
 
 		DBConf _dbConf;
 
