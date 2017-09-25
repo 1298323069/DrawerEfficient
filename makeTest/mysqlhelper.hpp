@@ -126,7 +126,7 @@ namespace mysqlhelper
 			
 		};
 
-		typedef map<pair<FT, string>> REDORD_DATA;
+		typedef map<string, pair<FT, string>> RECORD_DATA;
 
 		size_t updateRecord(const string& stableName, const map<string, pair<FT, string>> &mapColumns, const string &sCondition);
 
