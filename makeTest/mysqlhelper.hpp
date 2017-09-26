@@ -6,9 +6,8 @@
 #include <map>
 #include <vector>
 #include <string>
+#include "mysql.h"
 using namespace std;
-#include <mysql.h>
-
 namespace mysqlhelper
 {
 
@@ -105,7 +104,7 @@ namespace mysqlhelper
 		{
 		public:
 
-			vector<map<string, string>>& data();
+			vector<map<string, string> >& data();
 
 
 			size_t size();
@@ -114,7 +113,7 @@ namespace mysqlhelper
 			MysqlRecord operator [](size_t i);
 			
 		protected:
-			vector<map<string, string>> _data;			
+			vector<map<string, string> > _data;
 		};
 
 		MysqlData queryRecord(const string& sSql);
@@ -126,13 +125,13 @@ namespace mysqlhelper
 			
 		};
 
-		typedef map<string, pair<FT, string>> RECORD_DATA;
+		typedef map<string, pair<FT, string> > RECORD_DATA;
 
-		size_t updateRecord(const string& stableName, const map<string, pair<FT, string>> &mapColumns, const string &sCondition);
+		size_t updateRecord(const string& stableName, const RECORD_DATA &mapColumns, const string &sCondition);
 
-		size_t insertRecord(const string& stableName, const map<string, pair<FT, string>> &mapColumns);
+		size_t insertRecord(const string& stableName, const RECORD_DATA &mapColumns);
 
-		size_t replaceRecord(const string& stableName, const map<string, pair<FT, string>> &mapColumns);
+		size_t replaceRecord(const string& stableName, const RECORD_DATA &mapColumns);
 
 		size_t deleteRecord(const string& sTableName, const string& sCondition = "");
 
@@ -146,11 +145,11 @@ namespace mysqlhelper
 
 		long lastInserId();
 
-		string buildInsertSQL(const string& sTableName, const map<string, pair<FT, string>> &mapColumns);
+		string buildInsertSQL(const string& sTableName, const RECORD_DATA &mapColumns);
 
-		string buildReplaceSQL(const string& sTableName, const map<string, pair<FT, string>> &mapColumns);
+		string buildReplaceSQL(const string& sTableName, const RECORD_DATA &mapColumns);
 
-		string buidUpdateSQL(const string& sTableName, const map<string, pair<FT, string>> &mapColumns, const string& sCondition);
+		string buidUpdateSQL(const string& sTableName, const RECORD_DATA &mapColumns, const string& sCondition);
 
 		string getLastSQL(){ return _sLastSql;}
 
@@ -164,7 +163,7 @@ namespace mysqlhelper
 
 	private:
 
-		MYSQL * _pstMql; 
+		MYSQL *_pstMql;
 
 		DBConf _dbConf;
 

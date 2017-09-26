@@ -10,50 +10,33 @@ sources := $(wildcard *.cpp)
 #define object file list
 objects := $(sources:.cpp=.o)
 
-#define depend descript file list
-deps := $(sources:.cpp=.d)
-
 #define precompile var
 CC := gcc
 
 RM := rm -rf
 
-CPPDIRS=.
-CPPS=$(shell for dir in ${CPPDIRS};do echo $${dir}/*.cpp;done)
-
-OBJDIR=obj
-OBJS=$(patsubst %.cpp,${OBJDIR}/%.o,$(notdir ${CPPS}))
-
-
-SUBDIRS = foo bar baz
-
+INC+=-I/usr/local/mysql/include
+LIBDIR+=-L/usr/local/mysql/lib
 
 
 #final target rule
-$(executable): $(objects)
-		$(CC) $^ -o $@ 
+
+VPATH = /usr/local/mysql/lib
+$(executable): ${objects} -lmysqlclient
+	${CC} ${FLAGS} $^ -o $@ 
 
 #static model simply makefile
-$(objects):%.o:%.cpp
-		$(CC) -c $< -o $@ 
+
+main.o: main.cpp
+	${CC} -o $@ -c $<
+
+mysqlhelper.o: mysqlhelper.cpp
+	${CC}  ${FLAGS} ${INC} -c $< -o $@ 
 
 #clean rule for complicated project
-.PHONY: clean echo subdir
+.PHONY: clean
 clean:
-		$(RM) $(executable) $(objects) $(deps)
-
-echo:
-		$(OBJS)
-
-subdir:
-	 for dir in $(SUBDIRS);do\
-          $(shell mkdir $$dir);\
-        done
-
-sinclude $(deps)
-$(deps):%.d:%.cpp
-		$(CC) -MM $< > $@
-
+		$(RM) $(executable) $(objects)
 
 
 
