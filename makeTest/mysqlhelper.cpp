@@ -8,6 +8,15 @@ using namespace std;
 
 namespace mysqlhelper{
 
+//    MysqlHelper::mysqlhelper()
+//    {
+//        
+//    }
+//    void MysqlHelper::test()
+//    {
+//        printf("is a test");
+//        
+//    }
 //	MysqlHelper::MysqlHelper():_bConnected(false)
 //	{
 //        _pstMql = mysql_init(NULL);
@@ -16,11 +25,11 @@ namespace mysqlhelper{
 //
 //	MysqlHelper::MysqlHelper(const string& sHost, const string& sUser, const string& sPassword, const string& sDatabase,const string& scharSet, int port, int iFlag):_bConnected(false)
 //	{
-//
+
 //		init(sHost, sUser, sPassword, sDatabase, scharSet, port, iFlag);
-//
+
 //        _pstMql = mysql_init(NULL);
-//
+
 //	}
 
 //	MysqlHelper::MysqlHelper(const DBConf& tcDBConf):__bConnected(false)
@@ -40,6 +49,11 @@ namespace mysqlhelper{
 //			_pstMql = NULL;
 //		}
 //	}
+    
+//    void MysqlHelper::init(const string& sHost, const string& sUser , const string& sPassword , const string& sDatabase ,const string& scharSet, int port , int iFlag)
+//    {
+//        _dbConf._host = sHost;
+//    }
 //
 //	void MysqlHelper::init(const string& sHost, const string& sUser, const string& sPassword, const string& sDatabase,const string& scharSet, int port, int iFlag)
 //	{
@@ -52,7 +66,7 @@ namespace mysqlhelper{
 //        _dbConf._port = iFlag;
 //        
 //	}
-//    
+//
 //    void MysqlHelper::init(const DBConf& tcDBConf)
 //    {
 //        _dbConf = tcDBConf;

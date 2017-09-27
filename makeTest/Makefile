@@ -11,27 +11,31 @@ sources := $(wildcard *.cpp)
 objects := $(sources:.cpp=.o)
 
 #define precompile var
-CC := gcc
+
+CC=g++  
+
+CFLAGS=-I/usr/local/mysql/include  
 
 RM := rm -rf
 
-INC+=-I/usr/local/mysql/include
-LIBDIR+=-L/usr/local/mysql/lib
+
 
 
 #final target rule
 
 VPATH = /usr/local/mysql/lib
-$(executable): ${objects} -lmysqlclient
-	${CC} ${FLAGS} $^ -o $@ 
+$(executable): ${objects} -lmysqlclient 
+	${CC} ${CFLAGS} $^ -o $@ 
 
 #static model simply makefile
 
-main.o: main.cpp
-	${CC} -o $@ -c $<
+
+VPATH = /usr/local/mysql/include
+main.o: main.cpp mysql.h
+	${CC}  -o $@ -c $<
 
 mysqlhelper.o: mysqlhelper.cpp
-	${CC}  ${FLAGS} ${INC} -c $< -o $@ 
+	${CC} ${CFLAGS} -o $@ -c $^ 
 
 #clean rule for complicated project
 .PHONY: clean

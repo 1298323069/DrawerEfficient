@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include "mysql.h"
+
 using namespace std;
 namespace mysqlhelper
 {
@@ -69,9 +70,12 @@ namespace mysqlhelper
 
 		MysqlHelper(const DBConf& tcDBConf);
 
+        MysqlHelper();
+        
 		~MysqlHelper();
-
-
+        
+        void test();
+        
 		void init(const string& sHost, const string& sUser = "", const string& sPassword = "", const string& sDatabase = "",const string& scharSet = "", int port = 0, int iFlag = 0);
 
 		void init(const DBConf& tcDBConf);
