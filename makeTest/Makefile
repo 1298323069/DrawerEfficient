@@ -2,7 +2,7 @@
 #version: 
 
 #define executable file
-executable := complicated
+executable := mysql.out
 
 #define source file list
 sources := $(wildcard *.cpp)
@@ -30,12 +30,13 @@ $(executable): ${objects} -lmysqlclient
 #static model simply makefile
 
 
-VPATH = /usr/local/mysql/include
-main.o: main.cpp mysql.h
-	${CC}  -o $@ -c $<
+main.o: main.cpp
+	${CC} ${CFLAGS} -o $@ -c $<
+
 
 mysqlhelper.o: mysqlhelper.cpp
-	${CC} ${CFLAGS} -o $@ -c $^ 
+
+	${CC} ${CFLAGS} -o $@ -c $< 
 
 #clean rule for complicated project
 .PHONY: clean

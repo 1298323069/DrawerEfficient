@@ -12,170 +12,171 @@ using namespace std;
 namespace mysqlhelper
 {
 
+    void test();
+    
 	/* DB exception */
 
-	struct  MysqlHelper_Exception
-	{
-		MysqlHelper_Exception(const string &sBuffer):errorInfo(sBuffer){};
+    struct  MysqlHelper_Exception
+    {
+        MysqlHelper_Exception(const string &sBuffer):errorInfo(sBuffer){};
 
 
-		~MysqlHelper_Exception() throw(){};
+        ~MysqlHelper_Exception() throw(){};
 
 
-		string errorInfo;
-		
-	};
+        string errorInfo;
+        
+    };
 
 
-	/* DBConfig */
-	struct  DBConf
-	{
-		string _host;        /* 主机地址 */
-		string _user;        /* 用户名 */
-		string _passsword;   /* 用户密码 */
-		string _database;    /* 数据库 */
-		string _characters;  /* 字符集 */
-		int _port;           /* 端口 */
-		int _flag;           /* 客户短标示 */
+    /* DBConfig */
+    struct  DBConf
+    {
+        string _host;        /* 主机地址 */
+        string _user;        /* 用户名 */
+        string _passsword;   /* 用户密码 */
+        string _database;    /* 数据库 */
+        string _characters;  /* 字符集 */
+        int _port;           /* 端口 */
+        int _flag;           /* 客户短标示 */
 
 
-		DBConf():_port(0),_flag(0){}
+        DBConf():_port(0),_flag(0){}
 
-		void loadFromMap(const map<string, string> &mpParam)
-		{
+        void loadFromMap(const map<string, string> &mpParam)
+        {
 
-			map<string, string> mpTmp = mpParam;
+            map<string, string> mpTmp = mpParam;
 
-			_host = mpTmp["dbhost"];
-			_user = mpTmp["dbuser"];
-			_passsword = mpTmp["dbpass"];
-			_database = mpTmp["dbname"];
-			_characters = mpTmp["charset"];
-			_port = atoi(mpTmp["dbport"].c_str());
-			_flag = 0;
-			if (mpTmp["dbport"] == "")
-			{
-				_port = 3306;
-			}
+            _host = mpTmp["dbhost"];
+            _user = mpTmp["dbuser"];
+            _passsword = mpTmp["dbpass"];
+            _database = mpTmp["dbname"];
+            _characters = mpTmp["charset"];
+            _port = atoi(mpTmp["dbport"].c_str());
+            _flag = 0;
+            if (mpTmp["dbport"] == "")
+            {
+                _port = 3306;
+            }
 
 
-		}
-		
-	};
+        }
+        
+    };
 
-	class MysqlHelper
-	{
-	public:
-		MysqlHelper(const string& sHost, const string& sUser = "", const string& sPassword = "", const string& sDatabase = "",const string& scharSet = "", int port = 0, int iFlag = 0);
+    class MysqlHelper
+    {
+    public:
+        MysqlHelper(const string& sHost = "", const string& sUser = "", const string& sPassword = "", const string& sDatabase = "",const string& scharSet = "", int port = 0, int iFlag = 0);
 
-		MysqlHelper(const DBConf& tcDBConf);
+        MysqlHelper(const DBConf& tcDBConf);
 
         MysqlHelper();
         
-		~MysqlHelper();
+        ~MysqlHelper();
         
         void test();
         
-		void init(const string& sHost, const string& sUser = "", const string& sPassword = "", const string& sDatabase = "",const string& scharSet = "", int port = 0, int iFlag = 0);
+        void init(const string& sHost, const string& sUser = "", const string& sPassword = "", const string& sDatabase = "",const string& scharSet = "", int port = 0, int iFlag = 0);
 
-		void init(const DBConf& tcDBConf);
+        void init(const DBConf& tcDBConf);
 
-		void connect();
+        void connect();
 
-		void disConnect();
+        void disConnect();
 
-		string getVariables(const string& sName);
+        string getVariables(const string& sName);
 
-		MYSQL *getMysql();
+        MYSQL *getMysql();
 
-		string escapeString(const string& sFrom);
+        string escapeString(const string& sFrom);
 
-		void execute(const string& sSql);
+        void execute(const string& sSql);
 
-		class MysqlRecord
-		{
-		public:
-			MysqlRecord(const map<string, string> &record);
+        class MysqlRecord
+        {
+        public:
+            MysqlRecord(const map<string, string> &record);
 
-		const string& operator [](const string &s);
+        const string& operator [](const string &s);
 
-		protected:
-			const map<string, string>& _record;
-			
-		};
+        protected:
+            const map<string, string>& _record;
+            
+        };
 
-		class MysqlData
-		{
-		public:
+        class MysqlData
+        {
+        public:
 
-			vector<map<string, string> >& data();
+            vector<map<string, string> >& data();
+            
+            size_t size();
 
 
-			size_t size();
+            MysqlRecord operator [](size_t i);
+            
+        protected:
+            vector<map<string, string> > _data;
+        };
 
+        MysqlData queryRecord(const string& sSql);
 
-			MysqlRecord operator [](size_t i);
-			
-		protected:
-			vector<map<string, string> > _data;
-		};
+        enum FT
+        {
+            DB_INT,
+            DB_STR,
+            
+        };
 
-		MysqlData queryRecord(const string& sSql);
+        typedef map<string, pair<FT, string> > RECORD_DATA;
 
-		enum FT
-		{
-			DB_INT,
-			DB_STR,
-			
-		};
+        size_t updateRecord(const string& stableName, const RECORD_DATA &mapColumns, const string &sCondition);
 
-		typedef map<string, pair<FT, string> > RECORD_DATA;
+        size_t insertRecord(const string& stableName, const RECORD_DATA &mapColumns);
 
-		size_t updateRecord(const string& stableName, const RECORD_DATA &mapColumns, const string &sCondition);
+        size_t replaceRecord(const string& stableName, const RECORD_DATA &mapColumns);
 
-		size_t insertRecord(const string& stableName, const RECORD_DATA &mapColumns);
+        size_t deleteRecord(const string& sTableName, const string& sCondition = "");
 
-		size_t replaceRecord(const string& stableName, const RECORD_DATA &mapColumns);
+        size_t getRecordCount(const string& sTableName, const string& sCondition = "");
 
-		size_t deleteRecord(const string& sTableName, const string& sCondition = "");
+        size_t getSqlCount(const string &sCondition = "");
 
-		size_t getRecordCount(const string& sTableName, const string& sCondition = "");
+        bool existRecord(const string &sql);
 
-		size_t getSqlCount(const string &sCondition = "");
+        int getMaxValue(const string& sTableName, const string& sfiledName, const string& sCondition = "");
 
-		bool existRecord(const string &sql);
+        long lastInserId();
 
-		int getMaxValue(const string& sTableName, const string& sfiledName, const string& sCondition = "");
+        string buildInsertSQL(const string& sTableName, const RECORD_DATA &mapColumns);
 
-		long lastInserId();
+        string buildReplaceSQL(const string& sTableName, const RECORD_DATA &mapColumns);
 
-		string buildInsertSQL(const string& sTableName, const RECORD_DATA &mapColumns);
+        string buidUpdateSQL(const string& sTableName, const RECORD_DATA &mapColumns, const string& sCondition);
 
-		string buildReplaceSQL(const string& sTableName, const RECORD_DATA &mapColumns);
+        string getLastSQL(){ return _sLastSql;}
 
-		string buidUpdateSQL(const string& sTableName, const RECORD_DATA &mapColumns, const string& sCondition);
+        size_t getEffectedRows();
 
-		string getLastSQL(){ return _sLastSql;}
+    protected:
 
-		size_t getEffectedRows();
+        MysqlHelper(const MysqlHelper& tcMysql);
 
-	protected:
+        MysqlHelper& operator = (const MysqlHelper& tcMysql);
 
-		MysqlHelper(const MysqlHelper& tcMysql);
+    private:
 
-		MysqlHelper& operator = (const MysqlHelper& tcMysql);
+        MYSQL *_pstMql;
 
-	private:
+        DBConf _dbConf;
 
-		MYSQL *_pstMql;
+        bool _bConnected;
 
-		DBConf _dbConf;
-
-		bool _bConnected;
-
-		string _sLastSql;
-		
-	};
+        string _sLastSql;
+        
+    };
 }
 
 #endif
