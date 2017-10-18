@@ -27,9 +27,7 @@ int main(int argc, char const *argv[])
         cout << excep.errorInfo;
         return -1;
     }
-    
-//    MysqlHelper mysqlHelper1;
-//    mysqlHelper1.test();
+
     
 	return 0;
 }

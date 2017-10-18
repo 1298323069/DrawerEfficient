@@ -12,7 +12,6 @@ using namespace std;
 namespace mysqlhelper
 {
 
-    void test();
     
 	/* DB exception */
 
@@ -130,7 +129,7 @@ namespace mysqlhelper
             
         };
 
-        typedef map<string, pair<FT, string> > RECORD_DATA;
+        typedef map<string, pair<FT, string>> RECORD_DATA;
 
         size_t updateRecord(const string& stableName, const RECORD_DATA &mapColumns, const string &sCondition);
 
