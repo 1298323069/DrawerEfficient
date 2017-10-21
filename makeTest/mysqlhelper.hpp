@@ -147,7 +147,7 @@ namespace mysqlhelper
 
         int getMaxValue(const string& sTableName, const string& sfiledName, const string& sCondition = "");
 
-        long lastInserId();
+        long lastInserID();
 
         string buildInsertSQL(const string& sTableName, const RECORD_DATA &mapColumns);
 

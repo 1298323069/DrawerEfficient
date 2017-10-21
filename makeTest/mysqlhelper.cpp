@@ -257,32 +257,208 @@ namespace mysqlhelper{
 
     void MysqlHelper::execute(const string& sSql)
     {
-        //没有连上， 连接数据库
         if (!_bConnected)
         {
             connect();
         }
-        _sLastSql = sql;
+
+        _sLastSql = sSql;
 
         int iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length());
         if (iRet != 0)
         {
-            //自动重新连接
             int iError = mysql_error(_pstMql);
-            if (iError == 1013 || iError == 2006)
+            if (iError == 2013 || iError == 2006)
             {
                 connect();
-                iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length();
+                iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length());
+            }
+        }
+        if (iRet != 0)
+        {
+            throw MysqlHelper_Exception("[MysqlHelper::execute]: mysql_query: [ " + sSql + " ] :" + string(mysql_error(_pstMql)));
+        }
+
+    }
+
+     MysqlHelper::MysqlData MysqlHelper::queryRecord(const string& sSql)
+     {
+        MysqlData data;
+
+        if (!_bConnected)
+        {
+            connect();
+        }
+
+        _sLastSql = sSql;
+
+        int iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length());
+        if (iRet != 0)
+        {
+            int iError = mysql_error(_pstMql);
+            if (iError == 2013 || iError == 2006)
+            {
+                connect();
+                iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length());
             }
         }
 
         if (iRet != 0)
         {
-            throw MysqlHelper_Exception
+            throw MysqlHelper_Exception("MysqlHelper::execute]: mysql_query :[ " + sSql + " ] :" + string(mysql_error(_pstMql)));
         }
-    }
+        MYSQL_RES *pstRes = mysql_store_result(_pstMql);
+        if (pstRes == NULL)
+        {
+            throw MysqlHelper_Exception("[MysqlHelper::queryRecord]: mysql_store_result: " + sSql + " : " + string(mysql_error(_pstMql)));
+        }
+
+        std::vector<string> vtFields;
+        MYSQL_FIIELD *field;
+        while((field = mysql_fetch_field(pstRes)))
+        {
+            vtFields.push_back(field->name);
+        }
+        std::map<string, string> mpRow;
+        MYSQL_ROW stRow;
+        while((stRow = mysql_fetch_field(pstRes)) != (MYSQL_ROW) NULL)
+        {
+            mpRow.clear();
+            unsigned long * lengths = mysql_fetch_lengths(pstRes);
+            for (size_t i = 0; i < vtFields.size(); ++i)
+            {
+                if (stRow[i])
+                {
+                    mpRow[vtFields[i]] = string(stRow[i], lengths[i]);
+                }else
+                {
+                    mpRow[vtFields[i]] = "";
+                }
+            }
+
+            data.data().push_back(mpRow);
+        }
+
+        mysql_free_result(pstRes);
+        return data;
+
+     }
+
+
+     size_t MysqlHelper::updateRecord(const string& stableName, const RECORD_DATA &mapColumns, const string &sCondition)
+     {
+        string sSql = buidUpdateSQL(sTableName, mapColumns, sCondition);
+        execute(sSql);
+        return mysql_affectd_rows(_pstMql);
+     }
+
+
+     size_t MysqlHelper::insertRecord(const string& stableName, const RECORD_DATA &mapColumns)
+     {
+        string sSql = buildInsertSQL(sTableName, mapColumns);
+        execute(sSql);
+        return mysql_affectd_rows(_pstMql);
+     }
+
+     size_t MysqlHelper::replaceRecord(const string& stableName, const RECORD_DATA &mapColumns)
+     {
+        string sSql = buildReplaceSQL(sTableName, mapColumns);
+        execute(sSql);
+        return mysql_affectd_rows(_pstMql);
+     }
+
+     size_t MysqlHelper::deleteRecord(const string& sTableName, const string& sCondition)
+     {
+        ostringstream sSql;
+        sSql << "delete from " << sTableName << " " << sCondition;
+        execute(sSql.str());
+        return mysql_affectd_rows(_pstMql);
+     }
+
+
+     size_t MysqlHelper::getRecordCount(const string& sTableName, const string& sCondition)
+     {
+        ostringstream sSql;
+        sSql << "select count(*) as num from " << sTableName << " " << sCondition;
+        MysqlData data = queryRecord(sSql.str());
+        long n = atol(data[0]["num"].c_str());
+        return n;
+     }
     
-}
+    size_t MysqlHelper::getSqlCount(const string &sCondition)
+    {
+        ostringstream sSql;
+        sSql << "select count(*) as num " << sCondition;
+        MysqlData data = queryRecord(sSql.str());
+        long n = atol(data[0]["num"].c_str());
+        return n;
+    }
+
+    int MysqlHelper::getMaxValue(const string& sTableName, const string& sfiledName, const string& sCondition)
+    {
+        ostringstream sSql;
+        sSql << "select " << sfiledName << " as f from " << sTableName << " " << sCondition << " order by f desc limit 1";
+        MysqlData data = queryRecord(sSql.str());
+        int n = 0;
+        if (data.size() == 0)
+        {
+            n = 0
+        } else
+        {
+            n = atol(data[0]["f"].c_str());
+        }
+
+        return n;
+    }
+
+    bool MysqlHelper::existRecord(const string &sql)
+    {
+        return queryRecord(sql).size() > 0;
+
+    }
+
+    long MysqlHelper::lastInserID()
+    {
+        return mysql_insert_id(_pstMql);
+    }
+
+     size_t MysqlHelper::getEffectedRows()
+     {
+        return mysql_affectd_rows(_pstMql);
+
+     }
+
+
+     MysqlHelper::MysqlRecord::MysqlRecord(const map<string, string> &record):_record(record){}
+
+     const string &MysqlHelper::MysqlRecord::operator[](const string &s)
+     {
+        std::map<string, string>::const_iterator it = _record.find(s);
+        if (it == _record.end())
+        {
+            throw MysqlHelper_Exception("field '" + s + "' not exists.");
+        }
+
+        return it->second;
+     }
+
+     std::vector<std::map<string, string>> & MysqlHelper::MysqlData::data()
+     {
+        return _data;
+     }
+
+
+     size_t  MysqlHelper::MysqlData::size()
+     {
+        return _data.size();
+     }
+
+     MysqlHelper::MysqlRecord MysqlHelper::MysqlData::operator[](size_t i)
+     {
+        return MysqlRecord(_data[i]);
+     }
+
+} //end namespace
 
 
 
