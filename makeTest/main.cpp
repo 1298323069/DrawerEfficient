@@ -14,13 +14,11 @@ using namespace mysqlhelper;
 int main(int argc, char const *argv[])
 {
     
-    test();
-    
     MysqlHelper mysqlhelper;
     mysqlhelper.init("192.168.3.132","root","123456","CORINFO");
     try {
         
-        mysqlhelper.connnect();
+        mysqlhelper.connect();
         
     } catch (MysqlHelper_Exception& excep) {
         

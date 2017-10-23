@@ -70,8 +70,6 @@ namespace mysqlhelper
         MysqlHelper(const string& sHost = "", const string& sUser = "", const string& sPassword = "", const string& sDatabase = "",const string& scharSet = "", int port = 0, int iFlag = 0);
 
         MysqlHelper(const DBConf& tcDBConf);
-
-        MysqlHelper();
         
         ~MysqlHelper();
         
@@ -129,7 +127,7 @@ namespace mysqlhelper
             
         };
 
-        typedef map<string, pair<FT, string>> RECORD_DATA;
+        typedef map<string, pair<FT, string> > RECORD_DATA;
 
         size_t updateRecord(const string& stableName, const RECORD_DATA &mapColumns, const string &sCondition);
 

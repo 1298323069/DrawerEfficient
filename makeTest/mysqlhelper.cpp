@@ -10,11 +10,6 @@ using namespace std;
 
 namespace mysqlhelper{
 
-    MysqlHelper::MysqlHelper()
-    {
-        
-    }
-
     MysqlHelper::MysqlHelper(const string& sHost, const string& sUser, const string& sPassword, const string& sDatabase,const string& scharSet, int port, int iFlag):_bConnected(false)
     {
 
@@ -171,9 +166,9 @@ namespace mysqlhelper{
         ostringstream sColumnNames;
         ostringstream sColumnValues;
 
-        map<string,pair<FT, string>>::const_iterator itEnd = mapColumns.end();
+        map<string,pair<FT, string> >::const_iterator itEnd = mapColumns.end();
 
-        for (map<string, pair<FT, string>>:: const_iterator it = mapColumns.begin(); it < itEnd; ++it)
+        for (map<string, pair<FT, string> >:: const_iterator it = mapColumns.begin(); it != itEnd; ++it)
         {
             if (it == mapColumns.begin()) 
             {
@@ -210,8 +205,8 @@ namespace mysqlhelper{
     {
         ostringstream sColumnNameValueSet;
 
-        map<string, pair<FT, string>>::const_iterator itEnd = mapColumns.end();
-        for (map<string, pair<FT, string>>::const_iterator it = mapColumns.begin(); it != itEnd; ++it)
+        map<string, pair<FT, string> >::const_iterator itEnd = mapColumns.end();
+        for (map<string, pair<FT, string> >::const_iterator it = mapColumns.begin(); it != itEnd; ++it)
         {
             if (it == mapColumns.begin())
             {
@@ -227,7 +222,7 @@ namespace mysqlhelper{
                 sColumnNameValueSet << "= " << it ->second.second;
             } else
             {
-                sColumnNameValueSet << "= '" << escapeString(it->second.second) << "'"''
+                sColumnNameValueSet << "= '" << escapeString(it->second.second) << "'";
             }
         }
 
@@ -267,7 +262,7 @@ namespace mysqlhelper{
         int iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length());
         if (iRet != 0)
         {
-            int iError = mysql_error(_pstMql);
+            int iError = mysql_errno(_pstMql);
             if (iError == 2013 || iError == 2006)
             {
                 connect();
@@ -295,7 +290,7 @@ namespace mysqlhelper{
         int iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length());
         if (iRet != 0)
         {
-            int iError = mysql_error(_pstMql);
+            int iError = mysql_errno(_pstMql);
             if (iError == 2013 || iError == 2006)
             {
                 connect();
@@ -314,7 +309,7 @@ namespace mysqlhelper{
         }
 
         std::vector<string> vtFields;
-        MYSQL_FIIELD *field;
+        MYSQL_FIELD *field;
         while((field = mysql_fetch_field(pstRes)))
         {
             vtFields.push_back(field->name);
@@ -345,26 +340,26 @@ namespace mysqlhelper{
      }
 
 
-     size_t MysqlHelper::updateRecord(const string& stableName, const RECORD_DATA &mapColumns, const string &sCondition)
+     size_t MysqlHelper::updateRecord(const string& sTableName, const RECORD_DATA &mapColumns, const string &sCondition)
      {
         string sSql = buidUpdateSQL(sTableName, mapColumns, sCondition);
         execute(sSql);
-        return mysql_affectd_rows(_pstMql);
+        return mysql_affected_rows(_pstMql);
      }
 
 
-     size_t MysqlHelper::insertRecord(const string& stableName, const RECORD_DATA &mapColumns)
+     size_t MysqlHelper::insertRecord(const string& sTableName, const RECORD_DATA &mapColumns)
      {
         string sSql = buildInsertSQL(sTableName, mapColumns);
         execute(sSql);
-        return mysql_affectd_rows(_pstMql);
+        return mysql_affected_rows(_pstMql);
      }
 
-     size_t MysqlHelper::replaceRecord(const string& stableName, const RECORD_DATA &mapColumns)
+     size_t MysqlHelper::replaceRecord(const string &sTableName, const RECORD_DATA &mapColumns)
      {
         string sSql = buildReplaceSQL(sTableName, mapColumns);
         execute(sSql);
-        return mysql_affectd_rows(_pstMql);
+        return mysql_affected_rows(_pstMql);
      }
 
      size_t MysqlHelper::deleteRecord(const string& sTableName, const string& sCondition)
@@ -372,7 +367,7 @@ namespace mysqlhelper{
         ostringstream sSql;
         sSql << "delete from " << sTableName << " " << sCondition;
         execute(sSql.str());
-        return mysql_affectd_rows(_pstMql);
+        return mysql_affected_rows(_pstMql);
      }
 
 
@@ -402,7 +397,7 @@ namespace mysqlhelper{
         int n = 0;
         if (data.size() == 0)
         {
-            n = 0
+            n = 0;
         } else
         {
             n = atol(data[0]["f"].c_str());
@@ -424,7 +419,7 @@ namespace mysqlhelper{
 
      size_t MysqlHelper::getEffectedRows()
      {
-        return mysql_affectd_rows(_pstMql);
+        return mysql_affected_rows(_pstMql);
 
      }
 
@@ -442,7 +437,7 @@ namespace mysqlhelper{
         return it->second;
      }
 
-     std::vector<std::map<string, string>> & MysqlHelper::MysqlData::data()
+     std::vector<std::map<string, string> > & MysqlHelper::MysqlData::data()
      {
         return _data;
      }
