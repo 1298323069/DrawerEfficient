@@ -179,7 +179,7 @@ namespace mysqlhelper{
 
                 } else
                 {
-                    sColumnValues << "'" << escapeString(it->second) << "'";
+                    sColumnValues << "'" << escapeString(it->second.second) << "'";
                 }
             } else
             {
@@ -228,7 +228,7 @@ namespace mysqlhelper{
 
         ostringstream os;
 
-        os << "update " << sTableName << " set" << sColumnNameValueSet.str() << " " << sWhereFilter;
+        os << "update " << sTableName << " set" << sColumnNameValueSet.str() << " " << sCondition;
 
         return os.str();
     }
@@ -316,7 +316,7 @@ namespace mysqlhelper{
         }
         std::map<string, string> mpRow;
         MYSQL_ROW stRow;
-        while((stRow = mysql_fetch_field(pstRes)) != (MYSQL_ROW) NULL)
+        while((stRow = mysql_fetch_row(pstRes)) != (MYSQL_ROW) NULL)
         {
             mpRow.clear();
             unsigned long * lengths = mysql_fetch_lengths(pstRes);
