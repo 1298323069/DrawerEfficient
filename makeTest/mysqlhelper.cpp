@@ -76,11 +76,16 @@ namespace mysqlhelper{
         }
         //建立连接以后，自动调用设置字符集的语句
         
-        if (mysql_options(_pstMql, MYSQL_SET_CHARSET_NAME,_dbConf._characters.c_str() )) {
+        if (!_dbConf._characters.empty())
+        {
+            if (mysql_options(_pstMql, MYSQL_SET_CHARSET_NAME,_dbConf._characters.c_str() )) {
             
             throw(MysqlHelper_Exception(string("MysqlHelper::connect: mysql_options MYSQL_SET_CHARSET_NAME") + _dbConf._characters + ":" + string(mysql_error(_pstMql))));
                   
+            }
+            
         }
+        
         if(mysql_real_connect(_pstMql, _dbConf._host.c_str(), _dbConf._user.c_str(), _dbConf._passsword.c_str(), _dbConf._database.c_str(), _dbConf._port, NULL, _dbConf._flag)){
                   
             throw(MysqlHelper_Exception("[MysqlHelper::connect]: mysql_real_connect: " + string(mysql_error(_pstMql))));
@@ -126,11 +131,11 @@ namespace mysqlhelper{
         {
             if(it == mapColumns.begin())
             {
-                sColumnNames << "'" << it->first << "'";
+               sColumnNames << it->first;
                 
                 if( it->second.first == DB_INT)
                 {
-                    sColumnNames << it->second.second;
+                    sColumnValues << it->second.second;
                     
                 } else
                 {
@@ -139,7 +144,7 @@ namespace mysqlhelper{
                 
             } else
             {
-                sColumnNames << ",'" << it->first << "'";
+                sColumnNames << "," << it->first;
                 
                 if(it->second.first == DB_INT)
                 {
@@ -154,7 +159,7 @@ namespace mysqlhelper{
         
         ostringstream os;
         
-        os << "insert into" << sTableName << "(" << sColumnNames.str() << ") values (" << sColumnValues.str() << ")";
+        os << "insert into " << sTableName << "(" << sColumnNames.str() << ") values (" << sColumnValues.str() << ")";
         
         return os.str();
         
@@ -172,7 +177,7 @@ namespace mysqlhelper{
         {
             if (it == mapColumns.begin()) 
             {
-                sColumnNames << "'" << it->first << "'";
+                sColumnNames << "`" << it->first << "`";
                 if (it->second.first == DB_INT)
                 {
                     sColumnValues << it->second.second;
@@ -183,7 +188,7 @@ namespace mysqlhelper{
                 }
             } else
             {
-                sColumnNames << ",'" << it->first << "'";
+                sColumnNames << ",`" << it->first << "`";
                 if (it->second.first == DB_INT)
                 {
                     sColumnValues << "," + it->second.second;
@@ -252,6 +257,8 @@ namespace mysqlhelper{
 
     void MysqlHelper::execute(const string& sSql)
     {
+        cout << sSql << endl;
+
         if (!_bConnected)
         {
             connect();
@@ -260,12 +267,34 @@ namespace mysqlhelper{
         _sLastSql = sSql;
 
         int iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length());
+
+        if (_bConnected)
+        {
+            cout << "has connect" << endl;
+
+        } else
+        {
+
+            cout << "not connect" << endl;
+
+        }
+        if (iRet == 0)
+        {
+            cout << "queryOK" << endl;
+        } else
+        {
+            cout << "queryfail" << endl;
+        }
+
         if (iRet != 0)
         {
             int iError = mysql_errno(_pstMql);
             if (iError == 2013 || iError == 2006)
             {
                 connect();
+                
+                cout << "connet again" << endl;
+
                 iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length());
             }
         }
@@ -350,8 +379,22 @@ namespace mysqlhelper{
 
      size_t MysqlHelper::insertRecord(const string& sTableName, const RECORD_DATA &mapColumns)
      {
+
         string sSql = buildInsertSQL(sTableName, mapColumns);
+        if (_bConnected)
+        {
+            cout << "has connect" << endl;
+
+        } else
+        {
+
+            cout << "not connect" << endl;
+
+        }
+        
+       
         execute(sSql);
+
         return mysql_affected_rows(_pstMql);
      }
 
