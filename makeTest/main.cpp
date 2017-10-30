@@ -16,7 +16,8 @@ int main(int argc, char const *argv[])
     
     MysqlHelper mysqlhelper;
 
-    mysqlhelper.init("192.168.2.199","root","123456","CORINFO");
+    mysqlhelper.init("192.168.3.133","root","123456","CORINFO");
+
     try {
         
         mysqlhelper.connect();
@@ -29,13 +30,24 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
+
+
+     while(1)
+  {
+
+  } 
+
+
     MysqlHelper::RECORD_DATA record;
 
-    record.insert(make_pair("id",make_pair(MysqlHelper::DB_INT,"6")));
+    record.insert(make_pair("id",make_pair(MysqlHelper::DB_INT,"7")));
     record.insert(make_pair("name",make_pair(MysqlHelper::DB_STR,"xiaoming")));
     record.insert(make_pair("age",make_pair(MysqlHelper::DB_INT,"18")));
     record.insert(make_pair("phone",make_pair(MysqlHelper::DB_INT,"18")));
+    record.insert(make_pair("face",make_pair(MysqlHelper::DB_STR,"beauty")));
+
     int res = 0;
+
     try
     {
 
@@ -47,6 +59,8 @@ int main(int argc, char const *argv[])
 
         return -1;
     }
+
+ 
     cout << "res:" << res << " insert successfully "<< endl;
 
     

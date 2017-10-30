@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <cstring>
-
+#include <cppconn/exception.h>
 using namespace std;
 
 namespace mysqlhelper{
@@ -43,10 +43,113 @@ namespace mysqlhelper{
         _dbConf._user = sUser;
         _dbConf._passsword = sPassword;
         _dbConf._database = sDatabase;
-        _dbConf._characters = scharSet;
-        _dbConf._port = port;
-        _dbConf._port = iFlag;
+        _dbConf._characters = "utf8";
+        _dbConf._port = 3306;
+        _dbConf._flag = CLIENT_MULTI_STATEMENTS;
+
         
+    }
+
+     void MysqlHelper::connect()
+    {
+
+        MYSQL mysql;
+      cout << _dbConf._host + _dbConf._user + _dbConf._passsword + _dbConf._database << endl;
+       mysql_init(&mysql);
+
+try{
+    if (_pstMql)
+    {
+        cout << "_pstMql not NULL" << endl;
+        
+    }
+    cout << mysql_errno(_pstMql) << endl;
+cout << string(mysql_error(_pstMql)) << endl;
+         _pstMql =  mysql_real_connect(&mysql, _dbConf._host.c_str(), _dbConf._user.c_str(), _dbConf._passsword.c_str(), _dbConf._database.c_str(), _dbConf._port, NULL, _dbConf._flag);
+         // cout << string(mysql_error(_pstMql)) << endl;
+         // cout << mysql_errno(_pstMql) << endl;
+
+if (_pstMql)
+{
+    cout << "coonect ok " << endl;
+
+}
+        } catch (std::exception &e)
+        {
+            cout << e.what() << endl;
+
+        }
+
+
+
+        // disConnect();
+        
+        // if (_pstMql == NULL) {
+            
+        //     _pstMql = mysql_init(NULL);
+
+        // }
+        //建立连接以后，自动调用设置字符集的语句
+        
+        // if (_dbConf._characters.empty())
+        // {
+        //    cout << "start mysql_option " << endl;
+
+        //    unsigned int time = 10000;
+        //    unsigned int * a =  &time;
+
+        //     if (mysql_options(_pstMql, MYSQL_SET_CHARSET_NAME,_dbConf._characters.c_str() ) && mysql_options(_pstMql, MYSQL_OPT_WRITE_TIMEOUT,a )) {
+        //      cout << "options  has error " << endl;
+        //     throw(MysqlHelper_Exception(string("MysqlHelper::connect: mysql_options MYSQL_SET_CHARSET_NAME") + _dbConf._characters + ":" + string(mysql_error(_pstMql))));
+                  
+        //     }
+            
+        // }
+        // if (_pstMql)
+        // {
+        //     cout << "has a _pstMql" << endl;
+
+        // }
+        // cout << _dbConf._host + _dbConf._user + _dbConf._passsword + _dbConf._database << endl;
+
+        
+        // try{
+
+        //    mysql_real_connect(_pstMql, _dbConf._host.c_str(), _dbConf._user.c_str(), _dbConf._passsword.c_str(), _dbConf._database.c_str(), _dbConf._port, NULL, _dbConf._flag);
+
+        // } catch (char *string)
+        // {
+        //     cout << string << endl;
+
+        // }
+
+       
+
+        // if(!_pstMql){
+                 
+        //     cout << "connect has error " << endl;
+
+        //     cout << mysql_errno(_pstMql) << endl;
+
+        //     cout <<  string(mysql_error(_pstMql)) << endl;
+
+
+        //     // fprintf(stderr, "Failed to connect to database: Error: %s\n",
+        //   // mysql_error(_pstMql));
+                  
+        //     // throw(MysqlHelper_Exception("[MysqlHelper::connect]: mysql_real_connect: " + string(mysql_error(_pstMql))));
+                     
+        // }
+        // if (_pstMql)
+        // {
+        //     cout << "connect completed" << endl;
+
+        //     _bConnected = true;
+        // }
+                  
+        
+                  
+                  
     }
 
     void MysqlHelper::init(const DBConf& tcDBConf)
@@ -58,45 +161,17 @@ namespace mysqlhelper{
     {
         if(_pstMql != NULL )
         {
+            cout << "disConnect musql " << endl;
+
             mysql_close(_pstMql);
+
             _pstMql = mysql_init(NULL);
         }
         
         _bConnected = false;
         
     }
-    void MysqlHelper::connect()
-    {
-        disConnect();
-        
-        if (_pstMql == NULL) {
-            
-            _pstMql = mysql_init(NULL);
-            
-        }
-        //建立连接以后，自动调用设置字符集的语句
-        
-        if (!_dbConf._characters.empty())
-        {
-            if (mysql_options(_pstMql, MYSQL_SET_CHARSET_NAME,_dbConf._characters.c_str() )) {
-            
-            throw(MysqlHelper_Exception(string("MysqlHelper::connect: mysql_options MYSQL_SET_CHARSET_NAME") + _dbConf._characters + ":" + string(mysql_error(_pstMql))));
-                  
-            }
-            
-        }
-        
-        if(mysql_real_connect(_pstMql, _dbConf._host.c_str(), _dbConf._user.c_str(), _dbConf._passsword.c_str(), _dbConf._database.c_str(), _dbConf._port, NULL, _dbConf._flag)){
-                  
-            throw(MysqlHelper_Exception("[MysqlHelper::connect]: mysql_real_connect: " + string(mysql_error(_pstMql))));
-            
-                  
-        }
-                  
-        _bConnected = true;
-                  
-                  
-    }
+   
     string MysqlHelper::escapeString(const string& sFrom)
     {
         if(!_bConnected){
@@ -261,12 +336,18 @@ namespace mysqlhelper{
 
         if (!_bConnected)
         {
+
+            cout << "connect again" << endl;
+
             connect();
         }
 
         _sLastSql = sSql;
 
         int iRet = mysql_real_query(_pstMql, sSql.c_str(), sSql.length());
+
+        cout << string(mysql_error(_pstMql)) << endl;
+
 
         if (_bConnected)
         {
@@ -381,6 +462,7 @@ namespace mysqlhelper{
      {
 
         string sSql = buildInsertSQL(sTableName, mapColumns);
+
         if (_bConnected)
         {
             cout << "has connect" << endl;
