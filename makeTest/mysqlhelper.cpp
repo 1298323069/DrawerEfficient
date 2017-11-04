@@ -53,104 +53,40 @@ namespace mysqlhelper{
      void MysqlHelper::connect()
     {
 
-        MYSQL mysql;
-      cout << _dbConf._host + _dbConf._user + _dbConf._passsword + _dbConf._database << endl;
-       mysql_init(&mysql);
+        disConnect();
 
-try{
-    if (_pstMql)
-    {
-        cout << "_pstMql not NULL" << endl;
-        
-    }
-    cout << mysql_errno(_pstMql) << endl;
-cout << string(mysql_error(_pstMql)) << endl;
-         _pstMql =  mysql_real_connect(&mysql, _dbConf._host.c_str(), _dbConf._user.c_str(), _dbConf._passsword.c_str(), _dbConf._database.c_str(), _dbConf._port, NULL, _dbConf._flag);
-         // cout << string(mysql_error(_pstMql)) << endl;
-         // cout << mysql_errno(_pstMql) << endl;
-
-if (_pstMql)
-{
-    cout << "coonect ok " << endl;
-
-}
-        } catch (std::exception &e)
+         if (_dbConf._characters.empty())
         {
-            cout << e.what() << endl;
+           cout << "start mysql_option " << endl;
 
+           unsigned int time = 10000;
+           unsigned int * a =  &time;
+
+            if (mysql_options(_pstMql, MYSQL_SET_CHARSET_NAME,_dbConf._characters.c_str() ) && mysql_options(_pstMql, MYSQL_OPT_WRITE_TIMEOUT,a )) {
+             cout << "options  has error " << endl;
+            throw(MysqlHelper_Exception(string("MysqlHelper::connect: mysql_options MYSQL_SET_CHARSET_NAME") + _dbConf._characters + ":" + string(mysql_error(_pstMql))));
+                  
+            }
+            
         }
+      if (mysql_real_connect(_pstMql, _dbConf._host.c_str(), _dbConf._user.c_str(), _dbConf._passsword.c_str(), _dbConf._database.c_str(), _dbConf._port, NULL, _dbConf._flag))
+      {
+        _bConnected = true;
 
-
-
-        // disConnect();
-        
-        // if (_pstMql == NULL) {
-            
-        //     _pstMql = mysql_init(NULL);
-
-        // }
-        //建立连接以后，自动调用设置字符集的语句
-        
-        // if (_dbConf._characters.empty())
-        // {
-        //    cout << "start mysql_option " << endl;
-
-        //    unsigned int time = 10000;
-        //    unsigned int * a =  &time;
-
-        //     if (mysql_options(_pstMql, MYSQL_SET_CHARSET_NAME,_dbConf._characters.c_str() ) && mysql_options(_pstMql, MYSQL_OPT_WRITE_TIMEOUT,a )) {
-        //      cout << "options  has error " << endl;
-        //     throw(MysqlHelper_Exception(string("MysqlHelper::connect: mysql_options MYSQL_SET_CHARSET_NAME") + _dbConf._characters + ":" + string(mysql_error(_pstMql))));
-                  
-        //     }
-            
-        // }
-        // if (_pstMql)
-        // {
-        //     cout << "has a _pstMql" << endl;
-
-        // }
-        // cout << _dbConf._host + _dbConf._user + _dbConf._passsword + _dbConf._database << endl;
-
-        
-        // try{
-
-        //    mysql_real_connect(_pstMql, _dbConf._host.c_str(), _dbConf._user.c_str(), _dbConf._passsword.c_str(), _dbConf._database.c_str(), _dbConf._port, NULL, _dbConf._flag);
-
-        // } catch (char *string)
-        // {
-        //     cout << string << endl;
-
-        // }
-
-       
-
-        // if(!_pstMql){
-                 
-        //     cout << "connect has error " << endl;
-
-        //     cout << mysql_errno(_pstMql) << endl;
-
-        //     cout <<  string(mysql_error(_pstMql)) << endl;
-
-
-        //     // fprintf(stderr, "Failed to connect to database: Error: %s\n",
-        //   // mysql_error(_pstMql));
-                  
-        //     // throw(MysqlHelper_Exception("[MysqlHelper::connect]: mysql_real_connect: " + string(mysql_error(_pstMql))));
-                     
-        // }
-        // if (_pstMql)
-        // {
-        //     cout << "connect completed" << endl;
-
-        //     _bConnected = true;
-        // }
-                  
-        
-                  
+        cout << "connect success " << endl;
+          
+      } else
+      {
+        if (mysql_errno(_pstMql))  
+        {  
+            fprintf(stderr, "Connection error %d: %s/n", mysql_errno(_pstMql),  
+            mysql_error(_pstMql));  
+        } 
+      }       
                   
     }
+
+
 
     void MysqlHelper::init(const DBConf& tcDBConf)
     {
@@ -286,15 +222,16 @@ if (_pstMql)
         ostringstream sColumnNameValueSet;
 
         map<string, pair<FT, string> >::const_iterator itEnd = mapColumns.end();
+
         for (map<string, pair<FT, string> >::const_iterator it = mapColumns.begin(); it != itEnd; ++it)
         {
             if (it == mapColumns.begin())
             {
-                sColumnNameValueSet << "'" << it->first << "'";
+                sColumnNameValueSet << "`" << it->first << "`";
 
             } else
             {
-                sColumnNameValueSet << ",'" << it->first << "'";
+                sColumnNameValueSet << ",`" << it->first << "`";
             }
 
             if (it->second.first == DB_INT)
@@ -308,7 +245,7 @@ if (_pstMql)
 
         ostringstream os;
 
-        os << "update " << sTableName << " set" << sColumnNameValueSet.str() << " " << sCondition;
+        os << "update " << sTableName << " set " << sColumnNameValueSet.str() << " " << sCondition;
 
         return os.str();
     }
@@ -491,6 +428,9 @@ if (_pstMql)
      {
         ostringstream sSql;
         sSql << "delete from " << sTableName << " " << sCondition;
+
+        cout << sSql << endl;
+
         execute(sSql.str());
         return mysql_affected_rows(_pstMql);
      }
@@ -566,7 +506,6 @@ if (_pstMql)
      {
         return _data;
      }
-
 
      size_t  MysqlHelper::MysqlData::size()
      {

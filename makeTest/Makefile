@@ -14,12 +14,10 @@ objects := $(sources:.cpp=.o)
 
 CC=g++  
 
-CFLAGS=-I/usr/local/mysql/include  
+CFLAGS=-I/usr/local/mysql/include 
+
 
 RM := rm -rf
-
-
-
 
 #final target rule
 
