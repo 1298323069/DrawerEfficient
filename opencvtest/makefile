@@ -22,12 +22,13 @@ RM := rm -rf
 
 #/usr/local/Cellar/opencv/3.3.1_1/include/opencv2
 
-#/usr/local/Cellar/opencv/3.3.1_1/lib
+#/usr/local/Cellar/opencv/3.3.1_1/lib  libopencv_video.dylib
 
 #final target rule
 
-VPATH =  /usr/local/Cellar/opencv/3.3.1_1/lib
-$(executable): ${objects} -l
+
+VPATH = /usr/local/Cellar/opencv/3.3.1_1/lib
+$(executable): ${objects} -lopencv_video.3.3.1
 	${CC} ${CFLAGS} $^ -o $@ 
 
 #static model simply makefile
