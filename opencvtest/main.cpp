@@ -33,22 +33,33 @@ int main(int argc, char const *argv[])
 
 	cout << "work oright" << endl;
 
-//用来保存图像捕获所需要的信息
-// CvCapture *capture;
+    cv::Mat testPic = cv::imread("/Users/liangkun/Desktop/half.png"); //得到图片
 
-//结构体类型，用来保存一帧图像的信息，也就是一帧图像所有像素构成的一个矩阵
-// IplImage *frame, *frame_copy = 0;
+    cout <<  testPic.rows << endl; //图片的高
 
-//如果初始化失败，那个capture为空指针 
-// capture = cvCaptureFromFile("file:///Users/liangkun/Desktop/IMG_2224.MOV");
+    cout << testPic.cols << endl; //图片的宽
 
-// if (capture)
-// {
-//    cout << "capture ok" << endl;
-// }
+    cv::Rect rect(0,0,testPic.cols,testPic.rows / 2); 
+
+    cv::Mat image_cut = cv::Mat(testPic, rect);  //从中间切割的图片
+
+    cv::namedWindow("Extracted Frame");  //显示的窗口
+
+     cv::imshow("Extracted Frame",image_cut);
+
+     // 每一帧之间的延迟
+    int delay= 1000/0.5;
+
+    cv::waitKey(delay);
+
+	return 0;
+}
+
+int dealWithVedioAbout()
+{
 
 
-// 读取视频流
+    // 读取视频流
     cv::VideoCapture capture("file:///Users/liangkun/Desktop/IMG_2224.MOV");
     // 检测视频是否读取成功
     if (!capture.isOpened())
@@ -59,8 +70,12 @@ int main(int argc, char const *argv[])
 
     // 获取图像帧率
     double rate= capture.get(CV_CAP_PROP_FPS);
+
+
     bool stop(false);
+
     cv::Mat frame; // 当前视频帧
+
     cv::namedWindow("Extracted Frame");
 
     // 每一帧之间的延迟
@@ -74,19 +89,28 @@ int main(int argc, char const *argv[])
         {
             break;
         }
-        cv::imshow("Extracted Frame",frame);
+
+
+        cout <<  frame.rows << endl;
+        cout << frame.cols << endl;
+
+        cv::Rect rect(0,0,100,100);   //创建一个Rect框，属于cv中的类，四个参数代表x,y,width,height  
+
+        cv::Mat image_cut = cv::Mat(frame, rect); 
+
+
+        //显示当前的图像
+        cv::imshow("Extracted Frame",image_cut);
+
 
         // 引入延迟
         if (cv::waitKey(delay)>=0)
         {
-        	 stop= true;
+             stop= true;
         }
 
-               
     }
 
 
-
-	return 0;
 }
 
