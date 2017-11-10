@@ -24,8 +24,8 @@
 using std::cout;
 using std::endl;
 
-
-void testSqlAbout();
+cv::Mat getPicWith(cv::Mat originalMat); //获取图片
+void showMatWith(cv::Mat originalMat, float framerate); //展示图片
 
 
 int main(int argc, char const *argv[])
@@ -35,82 +35,132 @@ int main(int argc, char const *argv[])
 
     cv::Mat testPic = cv::imread("/Users/liangkun/Desktop/half.png"); //得到图片
 
-    cout <<  testPic.rows << endl; //图片的高
+    cv::Mat pic = getPicWith(testPic);
 
-    cout << testPic.cols << endl; //图片的宽
+    showMatWith(testPic, 0.5);
 
-    cv::Rect rect(0,0,testPic.cols,testPic.rows / 2); 
 
-    cv::Mat image_cut = cv::Mat(testPic, rect);  //从中间切割的图片
+    // cout <<  testPic.rows << endl; //图片的高
 
-    cv::namedWindow("Extracted Frame");  //显示的窗口
+    // cout << testPic.cols << endl; //图片的宽
 
-     cv::imshow("Extracted Frame",image_cut);
+    // cv::Rect rect(0,0,testPic.cols,testPic.rows / 2); 
 
-     // 每一帧之间的延迟
-    int delay= 1000/0.5;
+    // cv::Rect rect1(0,testPic.rows / 2,testPic.cols, testPic.rows / 2);
 
-    cv::waitKey(delay);
+
+    // cv::Mat image_cutTopHalf = cv::Mat(testPic, rect);  //从中间切割的图片
+
+    // cv::Mat image_cutBottomHalf = cv::Mat(testPic, rect1);  //从中间切割的图片
+
+    // cv::Mat hcombine,vcombine1;
+
+    // cv::hconcat(image_cutTopHalf,image_cutBottomHalf,hcombine);    //水平方向的拼接
+
+    // cv::namedWindow("topPic");  //显示的窗口
+
+    // cv::namedWindow("bottomPic");
+
+    //  // cv::imshow("topPic",image_cutTopHalf);
+    //  cv::imshow("hcombine",hcombine);
+
+    //  // 每一帧之间的延迟
+    // int delay= 1000/0.5;
+
+    // cv::waitKey(delay);
 
 	return 0;
 }
 
-int dealWithVedioAbout()
+cv::Mat getPicWith(cv::Mat originalMat)
 {
 
+    cv::Rect rect(0,0,originalMat.cols,originalMat.rows / 2); 
 
-    // 读取视频流
-    cv::VideoCapture capture("file:///Users/liangkun/Desktop/IMG_2224.MOV");
-    // 检测视频是否读取成功
-    if (!capture.isOpened())
-    {
-        cout << "No Input Image";
-        return 1;
-    }
-
-    // 获取图像帧率
-    double rate= capture.get(CV_CAP_PROP_FPS);
+    cv::Rect rect1(0,originalMat.rows / 2,originalMat.cols, originalMat.rows / 2);
 
 
-    bool stop(false);
+    cv::Mat image_cutTopHalf = cv::Mat(originalMat, rect);  //从中间切割的图片
 
-    cv::Mat frame; // 当前视频帧
+    cv::Mat image_cutBottomHalf = cv::Mat(originalMat, rect1);  //从中间切割的图片
 
-    cv::namedWindow("Extracted Frame");
+    cv::Mat hcombine,vcombine1;
 
-    // 每一帧之间的延迟
-    int delay= 1000/rate;
+    cv::hconcat(image_cutTopHalf,image_cutBottomHalf,hcombine);    //水平方向的拼接
 
-    // 遍历每一帧
-    while (!stop)
-    {
-        // 尝试读取下一帧
-        if (!capture.read(frame))
-        {
-            break;
-        }
+    // showMatWith(hcombine);
 
-
-        cout <<  frame.rows << endl;
-        cout << frame.cols << endl;
-
-        cv::Rect rect(0,0,100,100);   //创建一个Rect框，属于cv中的类，四个参数代表x,y,width,height  
-
-        cv::Mat image_cut = cv::Mat(frame, rect); 
-
-
-        //显示当前的图像
-        cv::imshow("Extracted Frame",image_cut);
-
-
-        // 引入延迟
-        if (cv::waitKey(delay)>=0)
-        {
-             stop= true;
-        }
-
-    }
-
+    return hcombine;
 
 }
+
+void showMatWith(cv::Mat originalMat, float framerate)
+{
+    cv::namedWindow("topPic");  //显示的窗口
+
+     // 每一帧之间的延迟
+    int delay= 1000/framerate;
+    cv::imshow("topPic",originalMat);
+    cv::waitKey(delay);
+
+}
+
+// int dealWithVedioAbout()
+// {
+
+
+//     // 读取视频流
+//     cv::VideoCapture capture("file:///Users/liangkun/Desktop/IMG_2224.MOV");
+//     // 检测视频是否读取成功
+//     if (!capture.isOpened())
+//     {
+//         cout << "No Input Image";
+//         return 1;
+//     }
+
+//     // 获取图像帧率
+//     double rate= capture.get(CV_CAP_PROP_FPS);
+
+
+//     bool stop(false);
+
+//     cv::Mat frame; // 当前视频帧
+
+//     cv::namedWindow("Extracted Frame");
+
+//     // 每一帧之间的延迟
+//     int delay= 1000/rate;
+
+//     // 遍历每一帧
+//     while (!stop)
+//     {
+//         // 尝试读取下一帧
+//         if (!capture.read(frame))
+//         {
+//             break;
+//         }
+
+
+//         cout <<  frame.rows << endl;
+//         cout << frame.cols << endl;
+
+//         cv::Rect rect(0,0,100,100);   //创建一个Rect框，属于cv中的类，四个参数代表x,y,width,height  
+
+//         cv::Mat image_cut = cv::Mat(frame, rect); 
+
+
+//         //显示当前的图像
+//         cv::imshow("Extracted Frame",image_cut);
+
+
+//         // 引入延迟
+//         if (cv::waitKey(delay)>=0)
+//         {
+//              stop= true;
+//         }
+
+//     }
+
+
+// }
 
