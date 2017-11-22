@@ -1,5 +1,5 @@
-#include "unp.h"
-
+#include "unp.hpp"
+#include "error.hpp"
 
 void str_cli(FILE *fp, int sockfd)
 {
@@ -25,8 +25,7 @@ int main(int argc, const char ** argv) {
     char recvline[MAXLINE + 1];
     struct sockaddr_in servaddr;
     if (argc != 2)
-        
-        printf("usage: a.out <IPaddress>");
+        err_quit("usage: a.out <IPaddress>");
     
     if ((sockfd =  socket(AF_INET, SOCK_STREAM, 0)) < 0)
           printf("socket error");

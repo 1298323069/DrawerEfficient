@@ -2,7 +2,7 @@
 #version: 
 
 #define executable file
-executable := mysql.out
+executable := boostTest.out
 
 #define source file list
 sources := $(wildcard *.cpp)
@@ -23,7 +23,7 @@ LIBS    :=  -lboost_atomic -lboost_chrono -lboost_container -lboost_context -lbo
 -lboost_log -lboost_log_setup -lboost_math_c99 -lboost_math_c99f -lboost_math_c99l -lboost_math_tr1 \
 -lboost_math_tr1f -lboost_math_tr1l -lboost_numpy -lboost_prg_exec_monitor  -lboost_random \
 -lboost_regex -lboost_serialization -lboost_signals -lboost_system -lboost_test_exec_monitor -lboost_thread \
--lboost_timer -lboost_type_erasure -lboost_unit_test_framework -lboost_wave -lboost_wserialization -lboost_python
+-lboost_timer -lboost_type_erasure -lboost_unit_test_framework -lboost_wave -lboost_wserialization
 
 
 RM := rm -rf

@@ -6,8 +6,8 @@
 //  Copyright © 2017年 Liangkun. All rights reserved.
 //
 
-#ifndef unp_h
-#define unp_h
+#ifndef unp_hpp
+#define unp_hpp
 
 #include <sys/types.h>
 #include <sys/socket.h>

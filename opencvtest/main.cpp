@@ -4,15 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <assert.h>
-// #include <math.h>
-// #include <float.h>
-// #include <limits.h>
-// #include <time.h>
-// #include <ctype.h>
-#include <iostream>
-// #include <string>
 
+#include <iostream>
+ 
 #include <cv.h>  
 #include <highgui.h>  
 #include <cxcore.h>  
@@ -118,7 +112,7 @@ void dealWithVedioAbout()
 
 
     // 读取视频流
-    cv::VideoCapture capture("file:///Users/liangkun/Desktop/Svr46.mp4");
+    cv::VideoCapture capture("file:///Users/liangkun/Desktop/IMG_2224.MOV");
     // 检测视频是否读取成功
     if (!capture.isOpened())
     {
@@ -144,13 +138,15 @@ void dealWithVedioAbout()
 
 
 
-    char *final_video_path = "file:///Users/liangkun/Desktop/Svr46final.avi"; //图片写入的URL
+    char *final_video_path = "file:///Users/liangkun/Desktop/final.avi"; //图片写入的URL
     int isColor = 1;    //是否是彩色的
-    double fps = rate;  //美妙有多少个图
+    double fps = rate;  //每秒有多少个图
+    cout << fps;
+
 
     CvSize size = cvSize(2160 * 2, 2160 / 2);
 
-    cv::VideoWriter pWriter(final_video_path, CV_FOURCC('M', 'J', 'P', 'G'), fps, size, isColor);
+    cv::VideoWriter pWriter(final_video_path, CV_FOURCC('D', 'I', 'V', 'X'), 29, size, isColor);
 
     while(capture.read(frame))
     {
