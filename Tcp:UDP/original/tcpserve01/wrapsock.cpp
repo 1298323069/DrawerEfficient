@@ -20,13 +20,3 @@ int Socket(int family, int type, int protocol)
 
 	return n;
 }
-
-int Connect(int sockfd, const struct sockaddr *servaddr, socklen_t addrlen)
-{
-	int n;
-	if ((n = connect(sockfd, servaddr, addrlen)) < 0)
-	{
-		err_sys("connect error");
-	}
-	return n;
-}

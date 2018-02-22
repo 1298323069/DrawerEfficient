@@ -6,8 +6,8 @@
 //  Copyright © 2017年 Liangkun. All rights reserved.
 //
 
-#ifndef unp_h
-#define unp_h
+#ifndef unp_hpp
+#define unp_hpp
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -28,6 +28,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/un.h>
+#include <sys/socket.h>
+
 
 
 #ifdef HAVE_SYS_SELECT_H
@@ -225,4 +227,16 @@ struct is_nameindex
 //};
 #endif
 
+
+#ifndef ssize_t
+
+#define ssize_t int
+
+#endif
+
+// #ifndef socklen_t
+
+// #define socklen_t int
+
+// #endif
 #endif /* unp_h */

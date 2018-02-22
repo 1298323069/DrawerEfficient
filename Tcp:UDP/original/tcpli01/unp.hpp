@@ -225,4 +225,15 @@ struct is_nameindex
 //};
 #endif
 
+#ifndef ssize_t
+
+#define ssize_t int
+
+#endif
+
+#ifndef socklen_t
+
+#define socklen_t int
+
+#endif
 #endif /* unp_h */

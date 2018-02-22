@@ -21,8 +21,8 @@ RM := rm -rf
 
 #final target rule
 
-#VPATH = /usr/local/mysql/lib
-$(executable): ${objects} 
+VPATH = /usr/local/mysql/lib
+$(executable): ${objects} -lmysqlclient 
 	${CC} ${CFLAGS} $^ -o $@ 
 
 #static model simply makefile

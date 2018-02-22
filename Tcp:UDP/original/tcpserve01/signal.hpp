@@ -5,10 +5,12 @@
 //  Created by 梁坤 on 17/4/15.
 //  Copyright © 2017年 Liangkun. All rights reserved.
 //
+#ifndef signal_hpp
+#define signal_hpp
 
-#ifndef wrapsock_hpp
-#define wrapsock_hpp
+#include "unp.hpp"
 
-int Socket(int family, int type, int protocol);
+
+Sigfunc * Signal (int signo, Sigfunc *func);
 
 #endif
